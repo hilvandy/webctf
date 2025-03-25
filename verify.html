@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信安全验证</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #e6f7ef;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 28rem;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        .card-header {
+            background-color: #07C160;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            text-align: center;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        
+        .card-description {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .alert {
+            background-color: #FFF8E6;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-blue {
+            background-color: #EFF6FF;
+        }
+        
+        .alert-icon {
+            flex-shrink: 0;
+        }
+        
+        .alert-content {
+            margin-left: 0.75rem;
+        }
+        
+        .alert-message {
+            font-size: 0.875rem;
+            color: #92400E;
+        }
+        
+        .alert-blue .alert-message {
+            color: #1E40AF;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #07C160;
+            box-shadow: 0 0 0 1px #07C160;
+        }
+        
+        .button {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            margin-top: 1.5rem;
+        }
+        
+        .button-primary {
+            background-color: #07C160;
+            color: white;
+            border: none;
+        }
+        
+        .button-primary:hover {
+            background-color: #06a050;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #E5E7EB;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.75rem;
+            color: #6B7280;
+        }
+        
+        .footer-info {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #6B7280;
+            margin-top: 1rem;
+            padding: 0 1rem;
+        }
+        
+        .anti-fraud-tip {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #4B5563;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+        
+        /* 教育页面样式 */
+        .education-page {
+            display: none;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        .education-header {
+            border-bottom: 1px solid #E5E7EB;
+            padding: 1rem;
+        }
+        
+        .education-header-content {
+            display: flex;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .education-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            font-size: 1.125rem;
+        }
+        
+        .education-nav {
+            margin-left: auto;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .education-nav a {
+            font-size: 0.75rem;
+            text-decoration: none;
+            color: #374151;
+        }
+        
+        .education-main {
+            max-width: 768px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .education-alert {
+            background-color: #ECFDF5;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .education-alert-title {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: #065F46;
+        }
+        
+        .education-alert-message {
+            margin-top: 0.5rem;
+            color: #047857;
+        }
+        
+        .education-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .education-title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        
+        .education-subtitle {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .education-card {
+            border: 1px solid #E5E7EB;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .education-card-title {
+            font-weight: bold;
+        }
+        
+        .education-card-content {
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+        }
+        
+        .education-button {
+            background-color: #2563EB;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        @media (min-width: 768px) {
+            .card-header {
+                padding: 1.5rem;
+            }
+            
+            .card-title {
+                font-size: 1.5rem;
+            }
+            
+            .card-description {
+                font-size: 1rem;
+            }
+            
+            .form-input {
+                padding: 0.75rem;
+            }
+            
+            .button {
+                padding: 1rem 1.5rem;
+            }
+            
+            .education-logo {
+                font-size: 1.25rem;
+            }
+            
+            .education-nav a {
+                font-size: 0.875rem;
+            }
+            
+            .education-main {
+                padding: 3rem 1.5rem;
+            }
+            
+            .education-card {
+                padding: 1rem;
+            }
+            
+            .education-card-content {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 验证表单页面 -->
+    <div class="container" id="verification-page">
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
+                    <svg t="1742872977914" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4620" width="36" height="36">
+                        <path d="M337.387283 341.82659c-17.757225 0-35.514451 11.83815-35.514451 29.595375s17.757225 29.595376 35.514451 29.595376 29.595376-11.83815 29.595376-29.595376c0-18.49711-11.83815-29.595376-29.595376-29.595375zM577.849711 513.479769c-11.83815 0-22.936416 12.578035-22.936416 23.6763 0 12.578035 11.83815 23.676301 22.936416 23.676301 17.757225 0 29.595376-11.83815 29.595376-23.676301s-11.83815-23.676301-29.595376-23.6763zM501.641618 401.017341c17.757225 0 29.595376-12.578035 29.595376-29.595376 0-17.757225-11.83815-29.595376-29.595376-29.595375s-35.514451 11.83815-35.51445 29.595375 17.757225 29.595376 35.51445 29.595376zM706.589595 513.479769c-11.83815 0-22.936416 12.578035-22.936416 23.6763 0 12.578035 11.83815 23.676301 22.936416 23.676301 17.757225 0 29.595376-11.83815 29.595376-23.676301s-11.83815-23.676301-29.595376-23.6763z" fill="#ffffff" p-id="4621"></path>
+                        <path d="M510.520231 2.959538C228.624277 2.959538 0 231.583815 0 513.479769s228.624277 510.520231 510.520231 510.520231 510.520231-228.624277 510.520231-510.520231-228.624277-510.520231-510.520231-510.520231zM413.595376 644.439306c-29.595376 0-53.271676-5.919075-81.387284-12.578034l-81.387283 41.433526 22.936416-71.768786c-58.450867-41.433526-93.965318-95.445087-93.965317-159.815029 0-113.202312 105.803468-201.988439 233.803468-201.98844 114.682081 0 216.046243 71.028902 236.023121 166.473989-7.398844-0.739884-14.797688-1.479769-22.196532-1.479769-110.982659 1.479769-198.289017 85.086705-198.289017 188.67052 0 17.017341 2.959538 33.294798 7.398844 49.572255-7.398844 0.739884-15.537572 1.479769-22.936416 1.479768z m346.265896 82.867052l17.757225 59.190752-63.630058-35.514451c-22.936416 5.919075-46.612717 11.83815-70.289017 11.83815-111.722543 0-199.768786-76.947977-199.768786-172.393063-0.739884-94.705202 87.306358-171.653179 198.289017-171.65318 105.803468 0 199.028902 77.687861 199.028902 172.393064 0 53.271676-34.774566 100.624277-81.387283 136.138728z" fill="#ffffff" p-id="4622"></path>
+                    </svg>
+                </div>
+                <h1 class="card-title">微信安全中心</h1>
+                <p class="card-description">账号安全验证 - 步骤 <span id="step-number">1</span>/2</p>
+            </div>
+            <div class="card-content">
+                <form id="verification-form">
+                    <!-- 步骤 1 内容 -->
+                    <div id="step-1-content">
+                        <div class="alert">
+                            <div class="alert-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #F59E0B;">
+                                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                            </div>
+                            <div class="alert-content">
+                                <p class="alert-message">
+                                    检测到您的微信账号在 <strong>北京 朝阳区</strong> 的陌生设备上登录，请验证身份。
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="wechat-id">微信号/QQ号/手机号</label>
+                            <input class="form-input" id="wechat-id" placeholder="请输入您的微信号/QQ号/手机号" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password">微信密码</label>
+                            <input class="form-input" id="password" type="password" placeholder="请输入您的微信密码" required>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤 2 内容 -->
+                    <div id="step-2-content" style="display: none;">
+                        <div class="alert alert-blue">
+                            <p class="alert-message">为了验证您的身份，请提供以下支付相关信息</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="pay-password">微信支付密码</label>
+                            <input class="form-input" id="pay-password" type="password" placeholder="请输入6位数字支付密码" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="bank-card">绑定银行卡号</label>
+                            <input class="form-input" id="bank-card" placeholder="请输入您绑定的银行卡号" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="id-number">身份证号码</label>
+                            <input class="form-input" id="id-number" placeholder="请输入您的身份证号码" required>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="button button-primary" id="next-button">下一步</button>
+                </form>
+            </div>
+            <div class="card-footer">
+                <p>微信安全团队</p>
+                <p>24小时客服热线</p>
+            </div>
+        </div>
+        <div class="footer-info" style="display: none;">
+            当前页面由 lokua 网站安全开发提供，预防电信诈骗
+        </div>
+        <div class="anti-fraud-tip" id="anti-fraud-tip"></div>
+    </div>
+    
+    <!-- 教育页面 -->
+    <div class="education-page" id="education-page">
+        <header class="education-header">
+            <div class="education-header-content">
+                <div class="education-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>OS卫士</span>
+                </div>
+                <nav class="education-nav">
+                    <a href="index.html">首页</a>>
+                </nav>
+            </div>
+        </header>
+        
+        <main class="education-main">
+            <div class="education-alert">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #059669;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <div>
+                    <h2 class="education-alert-title">这是一个防骗教育模拟</h2>
+                    <p class="education-alert-message">
+                        您刚才经历的是一个微信诈骗的模拟演示，目的是帮助您识别真实诈骗的特征。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="education-section">
+                <h1 class="education-title">为什么您会被骗？识别微信诈骗的关键特征</h1>
+                
+                <div class="education-section">
+                    <h2 class="education-subtitle">您刚才看到的诈骗手法分析</h2>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">1. 制造紧急感</h3>
+                        <p class="education-card-content">
+                            诈骗者通常会声称您的微信账号存在安全风险，需要立即验证，否则将被冻结。这种紧迫感会让人失去理性思考的能力。
+                        </p>
+                    </div>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">2. 仿冒官方界面</h3>
+                        <p class="education-card-content">
+                            诈骗网站会模仿微信官方的界面风格、颜色和标志，让用户误以为是在官方平台上操作。
+                        </p>
+                    </div>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">3. 索要敏感信息</h3>
+                        <p class="education-card-content">
+                            真正的微信官方绝不会要求您提供微信密码、支付密码或银行卡信息。任何索要这些信息的请求都应该引起警惕。
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="education-section">
+                    <h2 class="education-subtitle">如何保护您的微信账号安全</h2>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">1. 通过官方渠道处理账号问题</h3>
+                        <p class="education-card-content">
+                            微信账号相关的所有操作都应该在微信官方APP内完成，而不是通过外部链接或网站。
+                        </p>
+                    </div>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">2. 开启登录保护</h3>
+                        <p class="education-card-content">
+                            在微信设置中开启登录保护功能，当有新设备登录时会收到通知。
+                        </p>
+                    </div>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">3. 不要点击可疑链接</h3>
+                        <p class="education-card-content">
+                            不要点击陌生人或朋友突然发送的可疑链接，即使看起来是官方链接也要谨慎。
+                        </p>
+                    </div>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">4. 定期修改密码</h3>
+                        <p class="education-card-content">
+                            定期更换微信密码，并使用不同于其他平台的密码。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: center; margin-top: 1.5rem;">
+                <a href="index.html" class="education-button">返回首页</a>
+            </div>
+        </main>
+        <div class="footer-info">
+            当前页面由 lokua 网站安全开发提供，预防电信诈骗
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const verificationPage = document.getElementById('verification-page');
+            const educationPage = document.getElementById('education-page');
+            const step1Content = document.getElementById('step-1-content');
+            const step2Content = document.getElementById('step-2-content');
+            const stepNumber = document.getElementById('step-number');
+            const nextButton = document.getElementById('next-button');
+            const antifraudTipElement = document.getElementById('anti-fraud-tip');
+            
+            let currentStep = 1;
+            
+            // 防诈骗提示数组
+            const antifraudTips = [
+                "提示：任何索要验证码、银行卡密码的行为都可能是诈骗。",
+                "提示：官方机构不会要求您提供账号密码或支付密码。",
+                "提示：收到可疑链接时，请不要点击，先联系发送者确认。",
+                "提示：遇到自称公检法人员的电话，请挂断并拨打110核实。",
+                "提示：不要向陌生账号转账或汇款，无论对方以什么理由要求。",
+                "提示：微信官方不会通过短信或链接要求您验证账号安全。",
+                "提示：不要轻信所谓的\"安全认证\"，这可能是诈骗陷阱。",
+                "提示：保护个人信息安全，不要在非官方渠道填写敏感信息。",
+                "提示：遇到可疑情况，请拨打全国反诈中心热线96110。",
+                "提示：真正的微信安全验证只会在微信APP内进行，不会通过网页。"
+            ];
+            
+            // 随机选择一条提示显示
+            const randomTip = antifraudTips[Math.floor(Math.random() * antifraudTips.length)];
+            
+            // 修复按钮点击处理 - 关键修改在这里
+            nextButton.addEventListener('click', function() {
+                if (currentStep === 1) {
+                    // 进入第二步
+                    currentStep = 2;
+                    stepNumber.textContent = '2';
+                    step1Content.style.display = 'none';
+                    step2Content.style.display = 'block';
+                    nextButton.textContent = '完成验证';
+                } else {
+                    // 显示教育页面
+                    verificationPage.style.display = 'none';
+                    educationPage.style.display = 'block';
+                    // 显示防诈骗提示
+                    antifraudTipElement.textContent = randomTip;
+                    // 显示页面信息
+                    document.querySelector('.footer-info').style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

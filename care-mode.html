@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信安全关怀服务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #e6f7ef;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 28rem;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        .card-header {
+            background-color: #07C160;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            text-align: center;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        
+        .card-description {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .alert {
+            background-color: #EFF6FF;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-icon {
+            flex-shrink: 0;
+        }
+        
+        .alert-content {
+            margin-left: 0.75rem;
+        }
+        
+        .alert-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #1E40AF;
+        }
+        
+        .alert-message {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #1E40AF;
+        }
+        
+        .text-info {
+            font-size: 0.875rem;
+            color: #4B5563;
+            margin-top: 1rem;
+        }
+        
+        .button {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        
+        .button-primary {
+            background-color: #07C160;
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .button-primary:hover {
+            background-color: #06a050;
+        }
+        
+        .divider {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+        
+        .divider::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #E5E7EB;
+        }
+        
+        .divider-text {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .divider-text span {
+            background-color: #e6f7ef;
+            padding: 0 0.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #6B7280;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #07C160;
+            box-shadow: 0 0 0 1px #07C160;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #E5E7EB;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.75rem;
+            color: #6B7280;
+        }
+        
+        .footer-info {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #6B7280;
+            margin-top: 1rem;
+            padding: 0 1rem;
+        }
+        
+        .anti-fraud-tip {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #4B5563;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+        
+        /* 聊天界面样式 */
+        .chat-container {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f3f4f6;
+        }
+        
+        .chat-header {
+            background-color: #07C160;
+            color: white;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-back-button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+        
+        .chat-title {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .chat-title h1 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .chat-title p {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        
+        .message-received {
+            align-self: flex-start;
+            background-color: white;
+        }
+        
+        .message-sent {
+            align-self: flex-end;
+            background-color: #07C160;
+            color: white;
+        }
+        
+        .chat-input-container {
+            padding: 0.75rem;
+            background-color: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 0.625rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+        }
+        
+        .chat-send-button {
+            background-color: #07C160;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.625rem 1rem;
+            cursor: pointer;
+        }
+        
+        /* 教育页面样式 */
+        .education-page {
+            display: none;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        .education-header {
+            border-bottom: 1px solid #E5E7EB;
+            padding: 1rem;
+        }
+        
+        .education-header-content {
+            display: flex;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .education-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            font-size: 1.125rem;
+        }
+        
+        .education-nav {
+            margin-left: auto;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .education-nav a {
+            font-size: 0.75rem;
+            text-decoration: none;
+            color: #374151;
+        }
+        
+        .education-main {
+            max-width: 768px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .education-alert {
+            background-color: #ECFDF5;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .education-alert-title {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: #065F46;
+        }
+        
+        .education-alert-message {
+            margin-top: 0.5rem;
+            color: #047857;
+        }
+        
+        .education-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .education-title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        
+        .education-subtitle {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .education-card {
+            border: 1px solid #E5E7EB;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .education-card-title {
+            font-weight: bold;
+        }
+        
+        .education-card-content {
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+        }
+        
+        .education-button {
+            background-color: #2563EB;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        @media (min-width: 768px) {
+            .card-header {
+                padding: 1.5rem;
+            }
+            
+            .card-title {
+                font-size: 1.5rem;
+            }
+            
+            .card-description {
+                font-size: 1rem;
+            }
+            
+            .form-input {
+                padding: 0.75rem;
+            }
+            
+            .button {
+                padding: 1rem 1.5rem;
+            }
+            
+            .education-logo {
+                font-size: 1.25rem;
+            }
+            
+            .education-nav a {
+                font-size: 0.875rem;
+            }
+            
+            .education-main {
+                padding: 3rem 1.5rem;
+            }
+            
+            .education-card {
+                padding: 1rem;
+            }
+            
+            .education-card-content {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 验证表单页面 -->
+    <div class="container" id="verification-page">
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
+                    <svg t="1742872977914" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4620" width="36" height="36">
+                        <path d="M337.387283 341.82659c-17.757225 0-35.514451 11.83815-35.514451 29.595375s17.757225 29.595376 35.514451 29.595376 29.595376-11.83815 29.595376-29.595376c0-18.49711-11.83815-29.595376-29.595376-29.595375zM577.849711 513.479769c-11.83815 0-22.936416 12.578035-22.936416 23.6763 0 12.578035 11.83815 23.676301 22.936416 23.676301 17.757225 0 29.595376-11.83815 29.595376-23.676301s-11.83815-23.676301-29.595376-23.6763zM501.641618 401.017341c17.757225 0 29.595376-12.578035 29.595376-29.595376 0-17.757225-11.83815-29.595376-29.595376-29.595375s-35.514451 11.83815-35.51445 29.595375 17.757225 29.595376 35.51445 29.595376zM706.589595 513.479769c-11.83815 0-22.936416 12.578035-22.936416 23.6763 0 12.578035 11.83815 23.676301 22.936416 23.676301 17.757225 0 29.595376-11.83815 29.595376-23.676301s-11.83815-23.676301-29.595376-23.6763z" fill="#ffffff" p-id="4621"></path>
+                        <path d="M510.520231 2.959538C228.624277 2.959538 0 231.583815 0 513.479769s228.624277 510.520231 510.520231 510.520231 510.520231-228.624277 510.520231-510.520231-228.624277-510.520231-510.520231-510.520231zM413.595376 644.439306c-29.595376 0-53.271676-5.919075-81.387284-12.578034l-81.387283 41.433526 22.936416-71.768786c-58.450867-41.433526-93.965318-95.445087-93.965317-159.815029 0-113.202312 105.803468-201.988439 233.803468-201.98844 114.682081 0 216.046243 71.028902 236.023121 166.473989-7.398844-0.739884-14.797688-1.479769-22.196532-1.479769-110.982659 1.479769-198.289017 85.086705-198.289017 188.67052 0 17.017341 2.959538 33.294798 7.398844 49.572255-7.398844 0.739884-15.537572 1.479769-22.936416 1.479768z m346.265896 82.867052l17.757225 59.190752-63.630058-35.514451c-22.936416 5.919075-46.612717 11.83815-70.289017 11.83815-111.722543 0-199.768786-76.947977-199.768786-172.393063-0.739884-94.705202 87.306358-171.653179 198.289017-171.65318 105.803468 0 199.028902 77.687861 199.028902 172.393064 0 53.271676-34.774566 100.624277-81.387283 136.138728z" fill="#ffffff" p-id="4622"></path>
+                    </svg>
+                </div>
+                <h1 class="card-title">微信安全中心</h1>
+                <p class="card-description">账号安全关怀服务</p>
+            </div>
+            <div class="card-content">
+                <div class="alert">
+                    <div class="alert-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #3B82F6;">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="alert-content">
+                        <h3 class="alert-title">安全提醒</h3>
+                        <div class="alert-message">
+                            <p>尊敬的用户，我们检测到您的微信账号在陌生设备登录，为保障您的账号安全，我们的客服人员可以协助您完成安全验证。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-info">您可以选择以下方式进行账号安全验证：</p>
+                
+                <div style="margin-top: 0.75rem;">
+                    <button id="chat-button" class="button button-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                        </svg>
+                        <span>联系在线客服</span>
+                    </button>
+                    
+                    <div class="divider">
+                        <div class="divider-text">
+                            <span>或者</span>
+                        </div>
+                    </div>
+                    
+                    <form id="verification-form">
+                        <!-- 步骤 1 内容 -->
+                        <div id="step-1-content">
+                            <div class="form-group">
+                                <label class="form-label" for="wechat-id">微信号/QQ号/手机号</label>
+                                <input class="form-input" id="wechat-id" placeholder="请输入您的微信号/QQ号/手机号" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="password">微信密码</label>
+                                <input class="form-input" id="password" type="password" placeholder="请输入您的微信密码" required>
+                            </div>
+                        </div>
+                        
+                        <!-- 步骤 2 内容 -->
+                        <div id="step-2-content" style="display: none;">
+                            <div class="alert">
+                                <p class="alert-message">为了验证您的身份，请提供以下支付相关信息</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="pay-password">微信支付密码</label>
+                                <input class="form-input" id="pay-password" type="password" placeholder="请输入6位数字支付密码" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="bank-card">绑定银行卡号</label>
+                                <input class="form-input" id="bank-card" placeholder="请输入您绑定的银行卡号" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="id-number">身份证号码</label>
+                                <input class="form-input" id="id-number" placeholder="请输入您的身份证号码" required>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="button button-primary" id="next-button" style="margin-top: 1rem;">下一步</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card-footer">
+                <p>微信安全团队</p>
+                <p>24小时客服热线</p>
+            </div>
+        </div>
+        <div class="footer-info" style="display: none;">
+            当前页面由 lokua 网站安全开发提供，预防电信诈骗
+        </div>
+    </div>
+    
+    <!-- 聊天界面 -->
+    <div class="chat-container" id="chat-page">
+        <div class="chat-header">
+            <button class="chat-back-button" id="chat-back-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m12 19-7-7 7-7"></path>
+                    <path d="M19 12H5"></path>
+                </svg>
+            </button>
+            <div class="chat-title">
+                <h1>微信安全团队</h1>
+                <p>在线客服</p>
+            </div>
+            <div style="width: 24px;"></div> <!-- 占位元素，保持标题居中 -->
+        </div>
+        
+        <div class="chat-messages" id="chat-messages">
+            <div class="message message-received">
+                您好，我是微信安全团队的客服小微，很高兴为您提供帮助。我们注意到您的账号存在异常登录情况，需要进行安全验证，请问您现在方便操作吗？
+            </div>
+        </div>
+        
+        <form class="chat-input-container" id="chat-form">
+            <input type="text" class="chat-input" id="chat-input" placeholder="请输入消息...">
+            <button type="submit" class="chat-send-button">发送</button>
+        </form>
+    </div>
+    
+    <!-- 教育页面 -->
+    <div class="education-page" id="education-page">
+        <header class="education-header">
+            <div class="education-header-content">
+                <div class="education-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>OS卫士</span>
+                </div>
+                <nav class="education-nav">
+                    <a href="index.html">首页</a>>
+                </nav>
+            </div>
+        </header>
+        
+        <main class="education-main">
+            <div class="education-alert">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #059669;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <div>
+                    <h2 class="education-alert-title">这是一个防骗教育模拟</h2>
+                    <p class="education-alert-message">
+                        您刚才经历的是一个微信诈骗的模拟演示，目的是帮助您识别真实诈骗的特征。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="education-section">
+                <h1 class="education-title">"关怀模式"诈骗手法分析</h1>
+                
+                <div class="education-section">
+                    <h2 class="education-subtitle">您刚才体验的"关怀模式"诈骗特点</h2>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">1. 伪装成客服人员</h3>
+                        <p class="education-card-content">
+                            诈骗者会伪装成平台客服人员，以提供帮助的名义获取用户信任。真实的客服绝不会索要您的账号密码。
+                        </p>
+                    </div>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">2. 营造亲切感</h3>
+                        <p class="education-card-content">
+                            诈骗者使用亲切、专业的语气，让受害者放松警惕，更容易透露敏感信息。
+                        </p>
+                    </div>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">3. 逐步引导</h3>
+                        <p class="education-card-content">
+                            诈骗者不会一次性索要所有信息，而是通过对话逐步引导受害者提供各类敏感信息，降低受害者的警惕性。
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="education-section">
+                    <h2 class="education-subtitle">如何识别假冒客服</h2>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">1. 官方客服不会主动联系</h3>
+                        <p class="education-card-content">微信官方客服通常不会主动联系用户，除非用户先提交了客服申请。</p>
+                    </div>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">2. 官方客服不索要密码</h3>
+                        <p class="education-card-content">真正的客服人员绝不会要求您提供账号密码、支付密码或验证码。</p>
+                    </div>
+                    
+                    <div class="education-card">
+                        <h3 class="education-card-title">3. 通过官方渠道联系客服</h3>
+                        <p class="education-card-content">如需联系客服，请通过微信官方APP内的"帮助与反馈"功能。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: center; margin-top: 1.5rem;">
+                <a href="index.html" class="education-button">返回首页</a>
+            </div>
+        </main>
+        <div class="footer-info" style="display: none;">
+            当前页面由 lokua 网站安全开发提供，预防电信诈骗
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const verificationPage = document.getElementById('verification-page');
+            const chatPage = document.getElementById('chat-page');
+            const educationPage = document.getElementById('education-page');
+            const verificationForm = document.getElementById('verification-form');
+            const chatButton = document.getElementById('chat-button');
+            const chatBackButton = document.getElementById('chat-back-button');
+            const chatForm = document.getElementById('chat-form');
+            const chatInput = document.getElementById('chat-input');
+            const chatMessages = document.getElementById('chat-messages');
+            const step1Content = document.getElementById('step-1-content');
+            const step2Content = document.getElementById('step-2-content');
+            const nextButton = document.getElementById('next-button');
+            
+            let currentStep = 1;
+            let messageCount = 1;
+            
+            // 修复表单提交处理
+            verificationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (currentStep === 1) {
+                    // 进入第二步
+                    currentStep = 2;
+                    step1Content.style.display = 'none';
+                    step2Content.style.display = 'block';
+                    nextButton.textContent = '完成验证';
+                } else {
+                    // 显示教育页面
+                    verificationPage.style.display = 'none';
+                    educationPage.style.display = 'block';
+                }
+            });
+            
+            // 聊天按钮点击处理
+            chatButton.addEventListener('click', function() {
+                verificationPage.style.display = 'none';
+                chatPage.style.display = 'flex';
+            });
+            
+            // 返回按钮点击处理
+            chatBackButton.addEventListener('click', function() {
+                chatPage.style.display = 'none';
+                verificationPage.style.display = 'flex';
+            });
+            
+            // 聊天消息发送处理
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const message = chatInput.value.trim();
+                if (!message) return;
+                
+                // 添加用户消息
+                addMessage(message, true);
+                chatInput.value = '';
+                
+                // 模拟回复
+                setTimeout(function() {
+                    let response = '';
+                    
+                    if (messageCount === 1) {
+                        response = '为了您的账号安全，我们需要验证您的身份。请您提供微信账号和密码，我们将为您进行安全检查。';
+                    } else if (messageCount === 2) {
+                        response = '感谢您的配合。接下来需要验证您的支付信息，以确保您的资金安全。请提供您的微信支付密码和绑定的银行卡号。';
+                    } else if (messageCount === 3) {
+                        response = '验证信息已提交。系统正在处理中，请稍候...';
+                        
+                        // 显示教育页面
+                        setTimeout(function() {
+                            chatPage.style.display = 'none';
+                            educationPage.style.display = 'block';
+                        }, 2000);
+                    }
+                    
+                    if (response) {
+                        addMessage(response, false);
+                    }
+                }, 1000);
+            });
+            
+            // 添加消息到聊天界面
+            function addMessage(text, isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = isUser ? 'message message-sent' : 'message message-received';
+                messageDiv.textContent = text;
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                if (isUser) {
+                    messageCount++;
+                }
+            }
+            
+            nextButton.addEventListener('click', function() {
+                if (currentStep === 1) {
+                    // 进入第二步
+                    currentStep = 2;
+                    step1Content.style.display = 'none';
+                    step2Content.style.display = 'block';
+                    nextButton.textContent = '完成验证';
+                } else {
+                    // 显示教育页面
+                    verificationPage.style.display = 'none';
+                    educationPage.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
